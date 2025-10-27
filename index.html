@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foco Total - Gestão Pessoal</title>
+
+    <!-- Importa as fontes do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Importa a biblioteca de ícones Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.0.3"></script>
+
+    <style>
+        /* --- Estilos CSS Globais --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1d2b64, #f8cdda);
+            height: 100vh;
+        }
+        .app-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; position: relative; }
+        .hidden { display: none !important; }
+
+        /* --- Estilos Telas de Autenticação (Splash, Login, Cadastro, Esqueci Senha) --- */
+        #splash-screen, .auth-screen { animation: fadeIn 0.5s ease-in-out; }
+        #splash-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .logo { font-family: 'Montserrat', sans-serif; font-size: 4rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 10px; background: linear-gradient(45deg, #ffffff, #d4a5e8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: slideUp 1s ease-out; }
+        .slogan { font-weight: 300; font-size: 1.2rem; color: rgba(255, 255, 255, 0.8); animation: slideUp 1s ease-out 0.5s; animation-fill-mode: backwards; }
+        .auth-screen { width: 100%; max-width: 420px; padding: 20px; }
+        .auth-card { background: rgba(255, 255, 255, 0.1); padding: 40px 35px; border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.18); text-align: center; }
+        .auth-card h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 2.5rem; margin-bottom: 10px; }
+        .auth-card .subtitle { font-weight: 300; color: rgba(255, 255, 255, 0.8); margin-bottom: 35px; }
+        .input-group { text-align: left; margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 400; color: rgba(255, 255, 255, 0.9); margin-bottom: 8px; font-size: 0.9rem; }
+        .input-group input, .input-group select { width: 100%; padding: 14px 18px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; font-size: 1rem; font-family: 'Poppins', sans-serif; background-color: rgba(255, 255, 255, 0.15); color: #fff; transition: all 0.3s ease; }
+        .input-group select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 18px center; background-size: 1.2em; padding-right: 40px; }
+        .input-group input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.15) inset !important; -webkit-text-fill-color: #fff !important; }
+        .input-group input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: #f8cdda; background-color: rgba(255, 255, 255, 0.2); box-shadow: 0 0 0 3px rgba(248, 205, 218, 0.3); }
+        /* Ajuste para inputs dentro dos cards do app principal */
+        .card .input-group input, .card .input-group select, .modal .input-group input, .modal .input-group select { background-color: rgba(255, 255, 255, 0.7); border-color: #ccc; color: #333; }
+        .card .input-group select, .modal .input-group select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); }
+        .card .input-group input:-webkit-autofill, .modal .input-group input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px #fff inset !important; -webkit-text-fill-color: #333 !important; }
+        .card .input-group input::placeholder, .modal .input-group input::placeholder { color: #888; }
+        .card .input-group input:focus, .card .input-group select:focus, .modal .input-group input:focus, .modal .input-group select:focus { background-color: #fff; border-color: #1d2b64; box-shadow: 0 0 0 3px rgba(29, 43, 100, 0.2); }
+        .card .input-group label, .modal .input-group label { color: #333; }
+        .auth-options { text-align: right; margin-bottom: 25px; }
+        .auth-options .forgot-password { color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 0.9rem; transition: color 0.3s ease; cursor: pointer; }
+        .auth-options .forgot-password:hover { color: #fff; }
+        .btn-primary { width: 100%; padding: 15px; border: none; border-radius: 10px; background: #fff; color: #1d2b64; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-bottom: 30px; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-secondary { padding: 10px 20px; border: none; border-radius: 8px; background: #1d2b64; color: #fff; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: background 0.3s; }
+        .btn-secondary:hover { background: #3c4a84; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-gemini { padding: 0 15px; height: 38px; border: none; border-radius: 8px; background: linear-gradient(135deg, #a855f7, #e91e63); color: #fff; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 5px; margin-left: 5px; vertical-align: middle; }
+        .btn-gemini i { font-size: 1rem; }
+        #gemini-breakdown-btn { flex-basis: 150px; height: 46px; font-size: 0.9rem; padding: 0 20px; }
+        .btn-gemini:hover { transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); }
+        .btn-gemini:disabled { opacity: 0.7; cursor: not-allowed; }
+        .loader { width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+        .loader.dark { border-top-color: #1d2b64; border-color: rgba(0, 0, 0, 0.1); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .feedback-message { font-size: 0.9rem; font-weight: 600; margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; }
+        .error-message { color: #c0392b; background-color: rgba(192, 57, 43, 0.1); }
+        .success-message { color: #27ae60; background-color: rgba(39, 174, 96, 0.1); }
+        .info-message { color: #2980b9; background-color: rgba(41, 128, 185, 0.1); }
+        .switch-auth-link { font-weight: 300; color: rgba(255, 255, 255, 0.8); }
+        .switch-auth-link a { color: #fff; font-weight: 600; text-decoration: none; cursor: pointer; transition: opacity 0.3s ease; }
+        .switch-auth-link a:hover { opacity: 0.8; text-decoration: underline; }
+
+        /* --- Estilos Interface Principal --- */
+        #main-app { display: flex; width: 100vw; height: 100vh; animation: fadeIn 0.5s ease-in-out; }
+        #sidebar { width: 260px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-right: 1px solid rgba(255, 255, 255, 0.18); padding: 25px 20px; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { text-align: center; margin-bottom: 30px; }
+        .sidebar-header .logo { font-size: 2.5rem; margin-bottom: 15px; }
+        .user-profile { display: flex; align-items: center; background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 10px; margin-bottom: 30px; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; background-color: #f8cdda; margin-right: 10px; }
+        .user-profile div { font-size: 0.9rem; line-height: 1.3; }
+        .user-profile span { font-weight: 600; display: block; }
+        #main-menu { list-style: none; flex-grow: 1; overflow-y: auto; }
+        #main-menu li { display: flex; align-items: center; padding: 14px 10px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s ease; font-weight: 400; }
+        #main-menu li i { font-size: 1.4rem; margin-right: 15px; transition: all 0.3s ease; }
+        #main-menu li:hover { background: rgba(255, 255, 255, 0.1); }
+        #main-menu li.active { background: #fff; color: #1d2b64; font-weight: 600; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        #main-menu li.active i { color: #1d2b64; }
+        #logout-btn { display: flex; align-items: center; padding: 14px 10px; border-radius: 8px; cursor: pointer; transition: background 0.3s ease; font-weight: 600; color: rgba(255, 255, 255, 0.8); margin-top: 10px; }
+        #logout-btn i { font-size: 1.4rem; margin-right: 15px; }
+        #logout-btn:hover { background: rgba(255, 0, 0, 0.15); color: #fff; }
+        #content-area { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; background: #f4f7fa; }
+        .content-header { margin-bottom: 30px; }
+        .content-header h1 { font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 700; color: #1d2b64; }
+        .content-header p { font-size: 1.1rem; font-weight: 300; color: #555; }
+        .page-content { color: #333; }
+        .card { background: #ffffff; border-radius: 15px; padding: 25px; margin-bottom: 25px; border: 1px solid #e0e0e0; box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05); }
+        .card h2 { font-family: 'Montserrat', sans-serif; margin-bottom: 20px; color: #1d2b64; }
+        .card .card-header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card .card-header-action h2 { margin-bottom: 0; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .stat-card { background: #fff; padding: 20px; border-radius: 10px; display: flex; align-items: center; border: 1px solid #e0e0e0; }
+        .stat-card i { font-size: 2.5rem; margin-right: 15px; color: #1d2b64; }
+        .stat-card .stat-info span { font-size: 1.8rem; font-weight: 700; display: block; color: #1d2b64; }
+        .stat-card .stat-info p { font-size: 0.9rem; color: #555; }
+        #new-task-form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        #new-task-input { flex: 1; min-width: 200px; padding: 12px 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; font-family: 'Poppins', sans-serif; }
+        #add-task-btn { padding: 0 25px; height: 46px; border: none; border-radius: 8px; background: #1d2b64; color: #fff; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.3s; }
+        #add-task-btn:hover { background: #3c4a84; }
+        #task-form-feedback { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 20px; }
+        .task-list { list-style: none; }
+        .task-item { display: flex; align-items: center; background: #fdfdfd; padding: 15px; border-radius: 8px; margin-bottom: 10px; transition: all 0.3s; border: 1px solid #eee; }
+        .task-item.completed { text-decoration: line-through; opacity: 0.6; }
+        .task-item input[type="checkbox"] { margin-right: 15px; width: 18px; height: 18px; cursor: pointer; }
+        .task-item span { flex: 1; }
+        .task-item .delete-btn { background: none; border: none; color: #c0392b; font-size: 1.2rem; cursor: pointer; opacity: 0.5; transition: opacity 0.3s; }
+        .task-item:hover .delete-btn { opacity: 1; }
+        .goal-item { background: #fdfdfd; border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 15px; }
+        .goal-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+        .goal-item-header h3 { font-family: 'Montserrat', sans-serif; color: #1d2b64; font-size: 1.2rem; margin-right: 15px; margin-bottom: 5px; }
+        .goal-item-header .goal-actions { display: flex; gap: 10px; margin-bottom: 5px; }
+        .goal-item-header .goal-actions button { padding: 8px 12px; font-size: 0.9rem; }
+        .goal-item-header .delete-goal-btn { background: none; border: none; color: #c0392b; cursor: pointer; font-size: 1.2rem; opacity: 0.6; }
+        .goal-item-header .delete-goal-btn:hover { opacity: 1; }
+        .goal-item .progress-info { font-size: 0.9rem; color: #555; margin-bottom: 10px; }
+        .goal-item progress { width: 100%; height: 12px; border-radius: 6px; overflow: hidden; }
+        .goal-item progress::-webkit-progress-bar { background-color: #eee; }
+        .goal-item progress::-webkit-progress-value { background-color: #1d2b64; }
+        .habit-item { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 20px; background: #fdfdfd; border: 1px solid #eee; border-radius: 8px; margin-bottom: 15px; }
+        .habit-item-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px; }
+        .habit-item-header span { font-size: 1.1rem; font-weight: 600; color: #333; }
+        .habit-item-header .delete-habit-btn { background: none; border: none; color: #c0392b; cursor: pointer; font-size: 1.2rem; opacity: 0.6; }
+        .habit-item-header .delete-habit-btn:hover { opacity: 1; }
+        .habit-tracker { display: flex; gap: 10px; justify-content: center; width: 100%; }
+        .habit-tracker .day-check { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .habit-tracker label { font-size: 0.8rem; font-weight: 600; color: #777; }
+        .habit-tracker input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 35px; height: 35px; border: 2px solid #ccc; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; }
+        .habit-tracker input[type="checkbox"]:hover { border-color: #1d2b64; }
+        .habit-tracker input[type="checkbox"]:checked { background-color: #1d2b64; border-color: #1d2b64; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E"); background-size: 20px; background-position: center; background-repeat: no-repeat; }
+        @media (min-width: 768px) { .habit-item-header { width: auto; margin-bottom: 0; } .habit-tracker { width: auto; } }
+        #api-key-input { width: 100%; padding: 14px 18px; border: 1px solid #ccc; border-radius: 10px; font-size: 1rem; font-family: 'Poppins', sans-serif; background-color: #fff; color: #333; transition: all 0.3s ease; }
+        #save-api-key-btn { width: auto; padding: 14px 30px; margin-top: 15px; margin-bottom: 0; background: #1d2b64; color: #fff; }
+        #save-api-key-btn:hover { background: #3c4a84; }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); animation: fadeIn 0.3s; }
+        .modal-content { background-color: #f4f7fa; margin: 10% auto; padding: 30px; border-radius: 15px; border: 1px solid #e0e0e0; box-shadow: 0 8px 30px rgba(0,0,0,0.15); width: 90%; max-width: 500px; color: #333; }
+        .modal-content h2 { font-family: 'Montserrat', sans-serif; color: #1d2b64; margin-bottom: 25px; }
+        .close-modal { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-modal:hover, .close-modal:focus { color: #333; text-decoration: none; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px; }
+        .modal-actions button { width: auto; padding: 12px 25px; margin-bottom: 0; }
+        .modal-actions .btn-cancel { background: #f1f1f1; color: #555; }
+        .modal-actions .btn-cancel:hover { background: #ddd; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- Tela de Abertura (Splash) -->
+    <div id="splash-screen">
+        <h1 class="logo">Foco Total</h1>
+        <p class="slogan">Sua jornada para a produtividade começa aqui.</p>
+    </div>
+
+    <!-- Tela de Login -->
+    <div id="login-screen" class="auth-screen hidden">
+        <div class="auth-card">
+            <h2>Bem-vindo!</h2>
+            <p class="subtitle">Faça login para continuar</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" placeholder="seuemail@exemplo.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Senha</label>
+                    <input type="password" id="login-password" name="password" placeholder="Sua senha" required>
+                </div>
+                <div class="auth-options">
+                    <a id="show-forgot-password" class="forgot-password">Esqueceu a senha?</a>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+                <div class="switch-auth-link">
+                    <p>Não tem uma conta? <a id="show-register">Cadastre-se</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tela de Cadastro -->
+    <div id="register-screen" class="auth-screen hidden">
+        <div class="auth-card">
+            <h2>Crie sua Conta</h2>
+            <p class="subtitle">É rápido e fácil!</p>
+            <form id="register-form">
+                <div class="input-group">
+                    <label for="reg-fullname">Nome Completo</label>
+                    <input type="text" id="reg-fullname" name="fullname" placeholder="Seu nome completo" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" name="email" placeholder="seuemail@exemplo.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-password">Crie uma Senha</label>
+                    <input type="password" id="reg-password" name="password" placeholder="Mínimo de 6 caracteres" required>
+                </div>
+                <button type="submit" class="btn-primary">Criar Conta</button>
+                <div class="switch-auth-link">
+                    <p>Já tem uma conta? <a id="show-login">Faça Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tela de Esqueci a Senha -->
+    <div id="forgot-password-screen" class="auth-screen hidden">
+        <div class="auth-card">
+            <h2>Recuperar Senha</h2>
+            <p class="subtitle">Insira seu e-mail para enviarmos um link de recuperação.</p>
+            <form id="forgot-form">
+                <div class="input-group">
+                    <label for="forgot-email">Email</label>
+                    <input type="email" id="forgot-email" name="email" placeholder="seuemail@exemplo.com" required>
+                </div>
+                <button type="submit" class="btn-primary" id="forgot-submit-btn">Enviar Link</button>
+
+                <div id="forgot-message" class="feedback-message hidden"></div>
+
+                <div class="switch-auth-link" style="margin-top: 20px;">
+                    <p>Lembrou da senha? <a id="show-login-from-forgot">Faça Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interface Principal do Aplicativo (Após Login) -->
+    <div id="main-app" class="hidden">
+
+        <!-- Menu Lateral -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">Foco Total</h1>
+            </div>
+
+            <div class="user-profile">
+                <img src="https://placehold.co/40x40/f8cdda/1d2b64?text=WM" alt="Foto do Usuário">
+                <div>
+                    <span>Waldyr Mateus</span>
+                    Aluno TADS
+                </div>
+            </div>
+
+            <ul id="main-menu">
+                <li class="menu-item active" data-page="page-dashboard">
+                    <i class="ph ph-house"></i>
+                    Dashboard
+                </li>
+                <li class="menu-item" data-page="page-tarefas">
+                    <i class="ph ph-check-square"></i>
+                    Minhas Tarefas
+                </li>
+                <li class="menu-item" data-page="page-metas">
+                    <i class="ph ph-target"></i>
+                    Metas e Objetivos
+                </li>
+                <li class="menu-item" data-page="page-habitos">
+                    <i class="ph ph-chart-line-up"></i>
+                    Meus Hábitos
+                </li>
+                <li class="menu-item" data-page="page-configuracoes">
+                    <i class="ph ph-gear"></i>
+                    Configurações
+                </li>
+            </ul>
+
+            <div id="logout-btn">
+                <i class="ph ph-sign-out"></i>
+                Sair
+            </div>
+        </aside>
+
+        <!-- Área de Conteúdo Principal -->
+        <main id="content-area">
+
+            <!-- Página: Dashboard -->
+            <div id="page-dashboard" class="page-content">
+                <header class="content-header">
+                    <h1>Dashboard</h1>
+                    <p>Bem-vindo de volta, Waldyr! Aqui está seu resumo.</p>
+                </header>
+
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <i class="ph ph-check-circle"></i>
+                        <div class="stat-info">
+                            <span id="stat-tasks-completed">0</span>
+                            <p>Tarefas Concluídas Hoje</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="ph ph-list-checks"></i>
+                        <div class="stat-info">
+                            <span id="stat-tasks-pending">0</span>
+                            <p>Tarefas Pendentes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="ph ph-chart-line-up"></i>
+                        <div class="stat-info">
+                            <span id="stat-habits-done">0</span>
+                            <p>Hábitos em Dia</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 25px;">
+                    <h2>Acesso Rápido</h2>
+                    <button id="quick-add-task-btn" class="btn-primary" style="margin-bottom: 0; background: #1d2b64; color: #fff;">+ Adicionar Tarefa</button>
+                </div>
+            </div>
+
+            <!-- Página: Minhas Tarefas -->
+            <div id="page-tarefas" class="page-content hidden">
+                <header class="content-header">
+                    <h1>Minhas Tarefas</h1>
+                    <p>Organize seu dia e combata a procrastinação.</p>
+                </header>
+
+                <div class="card">
+                    <h2>Adicionar Nova Tarefa</h2>
+                    <form id="new-task-form">
+                        <input type="text" id="new-task-input" placeholder="Ex: Limpar a casa..." required>
+                        <button type="submit" id="add-task-btn">Adicionar</button>
+                        <button type="button" id="gemini-breakdown-btn" class="btn-gemini">
+                            ✨ Quebrar Tarefa
+                        </button>
+                    </form>
+                    <div id="task-form-feedback">
+                        <div id="task-loader" class="loader dark hidden"></div>
+                        <div id="task-error" class="feedback-message error-message hidden"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>A Fazer</h2>
+                    <ul id="task-list-todo" class="task-list">
+
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>Concluídas</h2>
+                    <ul id="task-list-completed" class="task-list">
+
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Página: Metas e Objetivos -->
+            <div id="page-metas" class="page-content hidden">
+                <header class="content-header">
+                    <h1>Metas e Objetivos</h1>
+                    <p>Defina e acompanhe seus objetivos de curto e longo prazo.</p>
+                </header>
+                <div class="card">
+                    <div class="card-header-action">
+                        <h2>Minhas Metas</h2>
+                        <button id="show-goal-modal-btn" class="btn-secondary">+ Cadastrar Meta</button>
+                    </div>
+
+                    <div id="goal-list">
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página: Meus Hábitos -->
+            <div id="page-habitos" class="page-content hidden">
+                <header class="content-header">
+                    <h1>Meus Hábitos</h1>
+                    <p>Acompanhe sua consistência e crie rotinas.</p>
+                </header>
+                <div class="card">
+                    <div class="card-header-action">
+                        <h2>Rastreador Semanal</h2>
+                        <button id="show-habit-modal-btn" class="btn-secondary">+ Cadastrar Hábito</button>
+                    </div>
+
+                    <div id="habit-list">
+
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 20px;">
+                        <div id="habit-save-message" class="feedback-message success-message hidden" style="margin: 0;"></div>
+                        <button id="save-habits-btn" class="btn-secondary">Salvar Hábitos</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página: Configurações -->
+            <div id="page-configuracoes" class="page-content hidden">
+                <header class="content-header">
+                    <h1>Configurações</h1>
+                    <p>Gerencie suas preferências e chaves de API.</p>
+                </header>
+                <div class="card">
+                    <h2>API do Google Gemini</h2>
+                    <p style="color: #555; margin-bottom: 20px;">
+                        Para que a funcionalidade de IA ("Quebrar Tarefa") funcione,
+                        você precisa de uma chave de API do Gemini. Crie uma gratuitamente no
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #1d2b64; font-weight: 600;">Google AI Studio</a>
+                        e cole abaixo. A chave fica salva apenas no seu navegador.
+                    </p>
+
+                    <div class="input-group">
+                        <label for="api-key-input">Sua Chave da API Gemini</label>
+                        <input type="password" id="api-key-input" placeholder="Cole sua chave aqui...">
+                    </div>
+
+                    <button id="save-api-key-btn" class="btn-primary">Salvar Chave</button>
+
+                    <div id="api-key-message" class="feedback-message hidden" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modais (Pop-ups) -->
+
+<div id="goal-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="goal-modal">&times;</span>
+        <h2>Cadastrar Nova Meta</h2>
+        <form id="goal-form">
+            <div class="input-group">
+                <label for="goal-title">Título da Meta</label>
+                <input type="text" id="goal-title" required>
+            </div>
+            <div class="input-group">
+                <label for="goal-type">Tipo de Meta</label>
+                <select id="goal-type">
+                    <option value="financeiro">Financeiro (Ex: Juntar Dinheiro)</option>
+                    <option value="peso">Peso Corporal (Ex: Atingir 85kg)</option>
+                    <option value="quantidade">Quantidade (Ex: Ler 12 livros)</option>
+                </select>
+            </div>
+            <div class="input-group" id="goal-inicial-group">
+                <label for="goal-inicial">Valor Inicial</label>
+                <input type="number" id="goal-inicial" step="0.01" value="0">
+            </div>
+            <div class="input-group" id="goal-meta-group">
+                <label for="goal-meta">Valor Meta</label>
+                <input type="number" id="goal-meta" step="0.01" value="100">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-cancel" data-modal="goal-modal">Cancelar</button>
+                <button type="submit" class="btn-primary" style="background: #1d2b64; color: #fff;">Salvar Meta</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="habit-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="habit-modal">&times;</span>
+        <h2>Cadastrar Novo Hábito</h2>
+        <form id="habit-form">
+            <div class="input-group">
+                <label for="habit-title">Nome do Hábito</label>
+                <input type="text" id="habit-title" placeholder="Ex: Beber 3L de Água" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-cancel" data-modal="habit-modal">Cancelar</button>
+                <button type="submit" class="btn-primary" style="background: #1d2b64; color: #fff;">Salvar Hábito</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="progress-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="progress-modal">&times;</span>
+        <h2 id="progress-modal-title">Adicionar Progresso</h2>
+        <form id="progress-form">
+            <input type="hidden" id="progress-goal-id">
+            <input type="hidden" id="progress-goal-type">
+            <input type="hidden" id="progress-action">
+            <div class="input-group">
+                <label for="progress-value" id="progress-modal-label">Valor</label>
+                <input type="number" id="progress-value" step="0.01" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary btn-cancel" data-modal="progress-modal">Cancelar</button>
+                <button type="submit" id="progress-submit-btn" class="btn-primary" style="background: #1d2b64; color: #fff;">Adicionar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- Configuração da API do Gemini ---
+    // Professora, aqui configuramos como chamar a IA do Google.
+    const GEMINI_API_URL_BASE = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent`;
+    let userApiKey = ""; // A chave secreta do usuário pra usar a IA fica aqui.
+
+    // Função pra esperar um pouquinho (útil pra tentar de novo se a API falhar)
+    const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+    // --- Função Principal para Chamar a IA (Gemini) ---
+    // Professora, esta função monta a "pergunta" pra IA e envia.
+    async function callGeminiAPI(prompt, systemInstruction, generationConfig = null, retries = 3, delay = 1000) {
+        // Verifica se o usuário colocou a chave lá nas Configurações
+        if (!userApiKey) throw new Error("Por favor, configure sua chave de API na página de 'Configurações'.");
+
+        const GEMINI_API_URL = `${GEMINI_API_URL_BASE}?key=${userApiKey}`; // Monta o endereço completo da API
+
+        // Monta o "pacote" de dados pra enviar pra IA
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }], // A pergunta do usuário
+            systemInstruction: { parts: [{ text: systemInstruction }] }, // Como a IA deve se comportar
+        };
+        if (generationConfig) payload.generationConfig = generationConfig; // Configurações extras (ex: pedir resposta em JSON)
+
+        // Tenta chamar a API até 3 vezes se der erro
+        for (let i = 0; i < retries; i++) {
+            try {
+                const response = await fetch(GEMINI_API_URL, { // Chama a API de verdade
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) { // Se a resposta deu erro...
+                    const errorBody = await response.json();
+                    throw new Error(`Erro ${response.status}: ${errorBody.error?.message || 'Erro desconhecido'}`);
+                }
+
+                const result = await response.json(); // Pega a resposta da IA
+
+                // Tenta pegar o texto da resposta
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    return result.candidates[0].content.parts[0].text; // Devolve o texto da IA!
+                } else if (result.promptFeedback?.blockReason) { // Se a API bloqueou
+                    throw new Error(`Bloqueado: ${result.promptFeedback.blockReason}`);
+                } else { // Se a resposta veio estranha
+                    throw new Error("Resposta da API malformada ou vazia.");
+                }
+            } catch (error) { // Se deu erro na tentativa
+                console.error(`Tentativa ${i + 1} API falhou:`, error.message);
+                if (i === retries - 1) throw error; // Desiste na última tentativa
+                await sleep(delay); // Espera antes de tentar de novo
+                delay *= 2; // Dobra o tempo de espera
+            }
+        }
+        throw new Error("Falha ao chamar a API após múltiplas tentativas."); // Se falhou todas as vezes
+    }
+
+    // --- Funções Auxiliares de Interface (UI) ---
+    // Mostra/esconde a bolinha de "carregando"
+    function showLoading(button, loader, show) {
+        if (button) button.disabled = show; // Desativa o botão enquanto carrega
+        if (loader) loader.classList.toggle('hidden', !show); // Mostra/esconde a bolinha
+    }
+
+    // Mostra uma mensagem na tela (erro, sucesso, info)
+    function showMessage(element, message, type = 'error') {
+        if (element) {
+            element.textContent = message;
+            element.className = `feedback-message ${type}-message`; // Muda a cor (vermelho pra erro, verde pra sucesso)
+            element.classList.remove('hidden'); // Mostra a mensagem
+            setTimeout(() => { if (element) element.classList.add('hidden'); }, 4000); // Esconde depois de 4 segundos
+        }
+    }
+
+    // --- Lógica Principal do Aplicativo ---
+    // Professora, essa parte roda quando a página HTML carrega.
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Variáveis pra guardar os dados do app (listas de tarefas, metas, etc.)
+        // Usamos 'let' porque essas listas vão mudar (adicionar/remover itens)
+        let allTasks = [];
+        let allGoals = [];
+        let allHabits = [];
+        // Variável pra chave da API (será carregada do localStorage)
+        let userApiKey = "";
+
+        // Pega os elementos HTML das telas de login/cadastro/etc.
+        const splashScreen = document.getElementById('splash-screen');
+        const loginScreen = document.getElementById('login-screen');
+        const registerScreen = document.getElementById('register-screen');
+        const forgotPasswordScreen = document.getElementById('forgot-password-screen');
+        const mainApp = document.getElementById('main-app'); // A tela principal depois de logar
+
+        // Links e botões pra navegar entre essas telas de autenticação
+        const showRegisterLink = document.getElementById('show-register');
+        const showLoginLink = document.getElementById('show-login');
+        const showForgotPasswordLink = document.getElementById('show-forgot-password');
+        const showLoginFromForgotLink = document.getElementById('show-login-from-forgot');
+
+        // Formulários de login, cadastro e esqueci senha
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const forgotForm = document.getElementById('forgot-form');
+        // Botão de Logout (Sair)
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // --- Lógica da Tela de Splash ---
+        // Simula um carregamento inicial, espera 3 segundos e mostra a tela de login
+        setTimeout(() => {
+            if(splashScreen) {
+                splashScreen.style.animation = 'fadeOut 0.5s'; // Animação pra tela sumir suavemente
+                setTimeout(() => { // Espera a animação terminar
+                    splashScreen.classList.add('hidden'); // Esconde a splash
+                    loginScreen.classList.remove('hidden'); // Mostra a tela de login
+                }, 450);
+            }
+        }, 3000); // 3000 milissegundos = 3 segundos
+
+        // --- Lógica de Navegação entre Telas de Autenticação ---
+        // Mostra a tela de Cadastro
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault(); // Impede o link de navegar pra outra página
+            loginScreen.classList.add('hidden');
+            forgotPasswordScreen.classList.add('hidden');
+            registerScreen.classList.remove('hidden');
+        });
+
+        // Função pra voltar pra tela de Login
+        function goToLogin() {
+            loginScreen.classList.remove('hidden');
+            registerScreen.classList.add('hidden');
+            forgotPasswordScreen.classList.add('hidden');
+        }
+        // Links que voltam pra tela de Login
+        showLoginLink.addEventListener('click', (e) => { e.preventDefault(); goToLogin(); });
+        showLoginFromForgotLink.addEventListener('click', (e) => { e.preventDefault(); goToLogin(); });
+
+        // Mostra a tela de Esqueci a Senha
+        showForgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginScreen.classList.add('hidden');
+            registerScreen.classList.add('hidden');
+            forgotPasswordScreen.classList.remove('hidden');
+        });
+
+        // Simula o envio do link de recuperação de senha
+        forgotForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const forgotBtn = document.getElementById('forgot-submit-btn');
+            const forgotMessage = document.getElementById('forgot-message');
+            forgotBtn.disabled = true;
+            showMessage(forgotMessage, 'Enviando...', 'info');
+            setTimeout(() => { // Simula espera de 2 segundos
+                forgotBtn.disabled = false;
+                showMessage(forgotMessage, 'Link de recuperação enviado!', 'success');
+            }, 2000);
+        });
+
+        // --- Lógica de Login/Cadastro (Simulado) ---
+        // Função chamada quando o usuário clica em "Entrar" ou "Criar Conta"
+        // ATENÇÃO: Isso NÃO faz login/cadastro de verdade, só esconde as telas e mostra o app.
+        function handleLogin(e) {
+            e.preventDefault();
+            console.log('Simulando login/cadastro...');
+            // Esconde as telas de autenticação
+            loginScreen.classList.add('hidden');
+            registerScreen.classList.add('hidden');
+            forgotPasswordScreen.classList.add('hidden');
+            // Mostra a interface principal do aplicativo
+            mainApp.classList.remove('hidden');
+            // Carrega os dados salvos no navegador (tarefas, metas, etc.)
+            loadAllData();
+        }
+
+        // --- Lógica de Logout ---
+        // Função chamada quando clica em "Sair"
+        function handleLogout() {
+            mainApp.classList.add('hidden'); // Esconde o app
+            goToLogin(); // Volta pra tela de login
+            switchPage('page-dashboard'); // Deixa o Dashboard selecionado por padrão
+        }
+
+        // Liga as funções handleLogin e handleLogout aos botões/formulários corretos
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleLogin); // Cadastro também "loga" direto
+        logoutBtn.addEventListener('click', handleLogout);
+
+        // --- Lógica de Navegação Interna (Menu Lateral) ---
+        // Pega os itens do menu e as divs de cada página
+        const menuItems = document.querySelectorAll('#main-menu .menu-item');
+        const pages = document.querySelectorAll('#content-area .page-content');
+        const quickAddTaskBtn = document.getElementById('quick-add-task-btn'); // Botão no Dashboard
+
+        // Função pra trocar a página visível no conteúdo principal
+        function switchPage(targetPageId) {
+            pages.forEach(page => page.classList.add('hidden')); // Esconde todas
+            menuItems.forEach(item => item.classList.remove('active')); // Desmarca todos os itens do menu
+
+            const targetPage = document.getElementById(targetPageId); // Acha a página pra mostrar
+            if (targetPage) targetPage.classList.remove('hidden'); // Mostra a página
+
+            const targetMenuItem = document.querySelector(`.menu-item[data-page="${targetPageId}"]`); // Acha o item do menu correspondente
+            if (targetMenuItem) targetMenuItem.classList.add('active'); // Marca como ativo
+        }
+
+        // Adiciona o evento de clique em cada item do menu pra chamar a função switchPage
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetPageId = item.getAttribute('data-page'); // Pega o ID da página alvo
+                switchPage(targetPageId); // Troca pra essa página
+            });
+        });
+
+        // Botão de atalho no Dashboard pra ir direto pra Tarefas
+        quickAddTaskBtn.addEventListener('click', () => switchPage('page-tarefas'));
+
+
+        // --- Lógica das Tarefas ---
+        // Professora, essa parte cuida da lista de tarefas.
+        const taskForm = document.getElementById('new-task-form');
+        const taskInput = document.getElementById('new-task-input');
+        const todoList = document.getElementById('task-list-todo'); // Lista de tarefas a fazer
+        const completedList = document.getElementById('task-list-completed'); // Lista de tarefas concluídas
+        const geminiBreakdownBtn = document.getElementById('gemini-breakdown-btn'); // Botão da IA pra quebrar tarefa
+        const taskLoader = document.getElementById('task-loader'); // Animação de carregando da IA
+        const taskError = document.getElementById('task-error'); // Mensagem de erro da IA
+
+        // Elementos no Dashboard que mostram as contagens
+        const statTasksCompleted = document.getElementById('stat-tasks-completed');
+        const statTasksPending = document.getElementById('stat-tasks-pending');
+        const statHabitsDone = document.getElementById('stat-habits-done');
+
+        // Função pra atualizar os números no Dashboard
+        function updateDashboardStats() {
+            // Conta tarefas pendentes e concluídas hoje
+            const pendingTasks = allTasks.filter(task => !task.completed).length;
+            const completedToday = allTasks.filter(task => task.completed && new Date(task.completedAt).toDateString() === new Date().toDateString()).length;
+            statTasksPending.textContent = pendingTasks;
+            statTasksCompleted.textContent = completedToday;
+
+            // Conta hábitos concluídos hoje
+            let habitsDoneToday = 0;
+            const todayIndex = new Date().getDay(); // 0=Domingo, 1=Segunda...
+            if (Array.isArray(allHabits)) { // Verifica se a lista de hábitos é válida
+                allHabits.forEach(habit => {
+                    // Garante que o hábito e a lista de checks são válidos antes de acessar
+                    if (habit && Array.isArray(habit.checks) && habit.checks[todayIndex]) {
+                        habitsDoneToday++;
+                    }
+                });
+            }
+            statHabitsDone.textContent = habitsDoneToday;
+        }
+
+        // Função pra salvar a lista de tarefas atual no localStorage
+        function saveTasks() {
+            localStorage.setItem('FOCO_TOTAL_TASKS', JSON.stringify(allTasks));
+            renderTasks(); // Re-desenha a lista na tela depois de salvar
+        }
+
+        // Função pra desenhar as listas de tarefas (A Fazer e Concluídas) na tela
+        function renderTasks() {
+            todoList.innerHTML = ''; // Limpa a lista A Fazer
+            completedList.innerHTML = ''; // Limpa a lista Concluídas
+
+            allTasks.forEach(task => { // Para cada tarefa na nossa lista de dados...
+                const taskItem = document.createElement('li'); // Cria o elemento <li>
+                taskItem.className = 'task-item';
+                taskItem.dataset.id = task.id; // Guarda o ID no HTML pra saber qual tarefa é
+
+                // Monta o HTML do item da lista
+                taskItem.innerHTML = `
+                        <input type="checkbox">
+                        <span>${task.text}</span>
+                        <button class="delete-btn"><i class="ph ph-trash"></i></button>
+                    `;
+
+                const checkbox = taskItem.querySelector('input[type="checkbox"]');
+                const deleteBtn = taskItem.querySelector('.delete-btn');
+
+                // Decide se vai pra lista A Fazer ou Concluídas
+                if (task.completed) {
+                    taskItem.classList.add('completed'); // Adiciona estilo de riscado
+                    checkbox.checked = true; // Marca o checkbox
+                    completedList.appendChild(taskItem);
+                } else {
+                    todoList.appendChild(taskItem);
+                }
+
+                // Evento pra quando clica no checkbox (marcar/desmarcar)
+                checkbox.addEventListener('change', () => {
+                    const taskId = taskItem.dataset.id; // Pega o ID
+                    const taskToUpdate = allTasks.find(t => t.id === taskId); // Acha a tarefa nos dados
+                    if (taskToUpdate) {
+                        taskToUpdate.completed = checkbox.checked; // Atualiza o status
+                        taskToUpdate.completedAt = checkbox.checked ? new Date().toISOString() : null; // Guarda a data/hora
+                        saveTasks(); // Salva e re-desenha
+                    }
+                });
+
+                // Evento pra quando clica no botão de lixeira (deletar)
+                deleteBtn.addEventListener('click', () => {
+                    const taskId = taskItem.dataset.id; // Pega o ID
+                    allTasks = allTasks.filter(t => t.id !== taskId); // Remove a tarefa da lista de dados
+                    saveTasks(); // Salva e re-desenha
+                });
+            });
+            updateDashboardStats(); // Atualiza os números no Dashboard
+        }
+
+        // Evento pra quando envia o formulário de nova tarefa
+        taskForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Impede recarregar a página
+            const taskText = taskInput.value.trim(); // Pega o texto
+            if (taskText) { // Se não tá vazio...
+                addTask(taskText); // Adiciona a tarefa
+                taskForm.reset(); // Limpa o formulário
+                taskError.classList.add('hidden'); // Esconde erros anteriores
+            }
+        });
+
+        // Função simples pra adicionar uma nova tarefa na lista de dados
+        function addTask(text) {
+            const newTask = { id: Date.now().toString(), text, completed: false, completedAt: null };
+            allTasks.push(newTask);
+            saveTasks(); // Salva e re-desenha
+        }
+
+        // Evento pro botão da IA "Quebrar Tarefa"
+        geminiBreakdownBtn.addEventListener('click', async () => {
+            const taskText = taskInput.value.trim(); // Pega o texto da tarefa principal
+            if (!taskText) { showMessage(taskError, 'Digite uma tarefa para quebrar.', 'error'); return; } // Validação
+
+            showLoading(geminiBreakdownBtn, taskLoader, true); // Mostra carregando
+            taskError.classList.add('hidden');
+
+            // Instruções pra IA sobre como quebrar a tarefa e responder em JSON
+            const systemPrompt = `Quebre a tarefa em 3-5 subtarefas acionáveis. Responda APENAS com JSON: { "subtarefas": ["sub1", "sub2", ...] }`;
+            const taskPrompt = `Tarefa: "${taskText}"`;
+            const jsonSchema = { type: "OBJECT", properties: { "subtarefas": { "type": "ARRAY", "items": { "type": "STRING" } } }, required: ["subtarefas"] };
+            const generationConfig = { responseMimeType: "application/json", responseSchema: jsonSchema };
+
+            try {
+                const responseText = await callGeminiAPI(taskPrompt, systemPrompt, generationConfig); // Chama a IA
+                const responseObject = JSON.parse(responseText); // Pega a resposta JSON
+
+                if (responseObject.subtarefas?.length > 0) { // Se vieram subtarefas...
+                    // Adiciona cada subtarefa formatada
+                    responseObject.subtarefas.forEach(subtask => addTask(`[${taskText}] ${subtask}`));
+                    taskForm.reset(); // Limpa o campo principal
+                } else {
+                    showMessage(taskError, 'IA não retornou subtarefas.', 'error');
+                }
+            } catch (error) { // Se deu erro...
+                console.error("Erro IA:", error);
+                showMessage(taskError, error.message, 'error'); // Mostra pro usuário
+            } finally {
+                showLoading(geminiBreakdownBtn, taskLoader, false); // Esconde carregando
+            }
+        });
+
+        // --- Lógica das Metas ---
+        // Professora, aqui cuidamos das metas: cadastrar, mostrar e atualizar progresso.
+        const goalList = document.getElementById('goal-list'); // Onde as metas aparecem
+        const goalModal = document.getElementById('goal-modal'); // Pop-up pra cadastrar
+        const goalForm = document.getElementById('goal-form'); // Formulário do pop-up
+        const showGoalModalBtn = document.getElementById('show-goal-modal-btn'); // Botão pra abrir o pop-up
+
+        // Pop-up pra adicionar/diminuir progresso
+        const progressModal = document.getElementById('progress-modal');
+        const progressForm = document.getElementById('progress-form');
+        const progressActionInput = document.getElementById('progress-action'); // Guarda a ação (add/subtract)
+        const progressSubmitBtn = document.getElementById('progress-submit-btn'); // Botão Salvar progresso
+
+        // Funções pra abrir/fechar pop-ups
+        function openModal(modalId) { const modal = document.getElementById(modalId); if (modal) modal.style.display = 'flex'; }
+        function closeModal(modalId) { const modal = document.getElementById(modalId); if (modal) modal.style.display = 'none'; }
+
+        // Fecha pop-up clicando no X ou Cancelar
+        document.querySelectorAll('.close-modal, .btn-cancel').forEach(btn => {
+            btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.modal));
+        });
+        // Abre pop-up de cadastrar meta
+        showGoalModalBtn.addEventListener('click', () => openModal('goal-modal'));
+
+        // Evento pra salvar nova meta
+        goalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Pega os dados do formulário
+            const title = document.getElementById('goal-title').value;
+            const type = document.getElementById('goal-type').value;
+            const inicial = parseFloat(document.getElementById('goal-inicial').value) || 0;
+            const meta = parseFloat(document.getElementById('goal-meta').value) || 0;
+            // Cria o objeto da meta
+            const newGoal = { id: Date.now().toString(), title, type, inicial, meta, atual: inicial };
+            allGoals.push(newGoal); // Adiciona na lista de dados
+            saveGoals(); // Salva e re-desenha
+            goalForm.reset(); // Limpa formulário
+            closeModal('goal-modal'); // Fecha pop-up
+        });
+
+        // Devolve a unidade (R$, kg, un) baseada no tipo da meta
+        function getGoalUnit(type) {
+            if (type === 'financeiro') return 'R$'; if (type === 'peso') return 'kg'; if (type === 'quantidade') return 'un'; return '';
+        }
+
+        // Desenha a lista de metas na tela
+        function renderGoals() {
+            goalList.innerHTML = ''; // Limpa
+            allGoals.forEach(goal => { // Pra cada meta...
+                const item = document.createElement('div'); // Cria o card
+                item.className = 'goal-item'; item.dataset.id = goal.id;
+                const unit = getGoalUnit(goal.type);
+                // Calcula a porcentagem
+                const range = goal.meta - goal.inicial; const currentProgress = goal.atual - goal.inicial;
+                const percent = range === 0 ? (goal.atual >= goal.meta ? 100 : 0) : Math.max(0, Math.min(100, (currentProgress / range) * 100));
+                // Monta o HTML do card
+                item.innerHTML = `
+                        <div class="goal-item-header">
+                            <h3>${goal.title}</h3>
+                            <div class="goal-actions">
+                                <button class="btn-secondary btn-add-progress">${goal.type === 'peso' ? 'Atualizar' : '+ Adicionar'}</button>
+                                ${goal.type !== 'peso' ? '<button class="btn-secondary btn-danger btn-decrease-progress">- Diminuir</button>' : ''}
+                                <button class="delete-goal-btn"><i class="ph ph-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="progress-info">
+                            <strong>Atual:</strong> ${unit} ${goal.atual.toFixed(goal.type === 'quantidade' ? 0 : 2)} / <strong>Meta:</strong> ${unit} ${goal.meta.toFixed(goal.type === 'quantidade' ? 0 : 2)}
+                        </div>
+                        <progress value="${percent}" max="100"></progress>
+                    `;
+                // Liga os botões às suas funções
+                item.querySelector('.btn-add-progress').addEventListener('click', () => openProgressModal(goal, 'add'));
+                const decreaseBtn = item.querySelector('.btn-decrease-progress');
+                if (decreaseBtn) decreaseBtn.addEventListener('click', () => openProgressModal(goal, 'subtract'));
+                item.querySelector('.delete-goal-btn').addEventListener('click', () => { allGoals = allGoals.filter(g => g.id !== goal.id); saveGoals(); });
+                goalList.appendChild(item); // Adiciona na tela
+            });
+        }
+
+        // Prepara e abre o pop-up pra atualizar o progresso
+        function openProgressModal(goal, action) {
+            // Guarda os dados da meta no pop-up
+            document.getElementById('progress-goal-id').value = goal.id; document.getElementById('progress-goal-type').value = goal.type;
+            progressActionInput.value = action;
+            // Ajusta os textos do pop-up
+            const modalTitle = document.getElementById('progress-modal-title'); const modalLabel = document.getElementById('progress-modal-label');
+            const progressValueInput = document.getElementById('progress-value');
+            progressValueInput.step = (goal.type === 'quantidade') ? "1" : "0.01"; // Define casas decimais
+            if(goal.type === 'peso') { modalTitle.textContent = `Atualizar ${goal.title}`; modalLabel.textContent = "Peso Atual (kg)"; progressSubmitBtn.textContent = 'Atualizar'; }
+            else if (action === 'add') { modalTitle.textContent = `Adicionar ${goal.title}`; modalLabel.textContent = `Valor (${getGoalUnit(goal.type)})`; progressSubmitBtn.textContent = 'Adicionar'; }
+            else { modalTitle.textContent = `Diminuir ${goal.title}`; modalLabel.textContent = `Valor (${getGoalUnit(goal.type)})`; progressSubmitBtn.textContent = 'Diminuir'; }
+            progressValueInput.value = ''; // Limpa campo
+            openModal('progress-modal'); // Abre
+        }
+
+        // Evento pra salvar o progresso da meta
+        progressForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Pega os dados
+            const goalId = document.getElementById('progress-goal-id').value; const goalType = document.getElementById('progress-goal-type').value;
+            const action = progressActionInput.value; const value = parseFloat(document.getElementById('progress-value').value);
+            const goal = allGoals.find(g => g.id === goalId); // Acha a meta
+            if (goal && !isNaN(value)) { // Se achou e o valor é válido...
+                // Atualiza o valor atual
+                if (goalType === 'peso') goal.atual = value;
+                else if (action === 'add') goal.atual += value;
+                else if (action === 'subtract') goal.atual -= value;
+                goal.atual = Math.max(goal.inicial, goal.atual); // Garante que não fique abaixo do inicial
+            }
+            saveGoals(); // Salva e re-desenha
+            closeModal('progress-modal'); // Fecha o pop-up
+        });
+
+        // Salva a lista de metas no localStorage
+        function saveGoals() { localStorage.setItem('FOCO_TOTAL_GOALS', JSON.stringify(allGoals)); renderGoals(); }
+
+        // --- Lógica dos Hábitos ---
+        // Professora, aqui gerenciamos os hábitos e o rastreamento semanal.
+        const habitList = document.getElementById('habit-list'); // Onde os hábitos aparecem
+        const habitModal = document.getElementById('habit-modal'); // Pop-up pra cadastrar
+        const habitForm = document.getElementById('habit-form'); // Formulário do pop-up
+        const showHabitModalBtn = document.getElementById('show-habit-modal-btn'); // Botão "+ Cadastrar Hábito"
+        const saveHabitsBtn = document.getElementById('save-habits-btn'); // Botão pra salvar os checks da semana
+        const habitSaveMessage = document.getElementById('habit-save-message'); // Mensagem de sucesso ao salvar
+
+        showHabitModalBtn.addEventListener('click', () => openModal('habit-modal')); // Abre pop-up
+
+        // Evento pra salvar novo hábito
+        habitForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('habit-title').value.trim();
+            if(title) { // Se digitou um nome...
+                const newHabit = { id: Date.now().toString(), title, checks: Array(7).fill(false) }; // Cria com checks vazios
+                if (!Array.isArray(allHabits)) allHabits = []; // Garante que é lista
+                allHabits.push(newHabit); // Adiciona nos dados
+                saveHabits(); // Salva e re-desenha
+                habitForm.reset(); // Limpa formulário
+                closeModal('habit-modal'); // Fecha pop-up
+            }
+        });
+
+        // Salva a lista de hábitos no localStorage
+        function saveHabits() {
+            if (!Array.isArray(allHabits)) { console.error("Erro: Tentando salvar hábitos, mas não é lista.", allHabits); allHabits = []; } // Segurança
+            localStorage.setItem('FOCO_TOTAL_HABITS', JSON.stringify(allHabits));
+            renderHabits(); // Re-desenha
+            updateDashboardStats(); // Atualiza Dashboard
+        }
+
+        // Evento pro botão "Salvar Hábitos" (salvar os checks da semana)
+        saveHabitsBtn.addEventListener('click', () => {
+            if (!Array.isArray(allHabits)) { showMessage(habitSaveMessage, 'Erro ao salvar.', 'error'); return; } // Segurança
+
+            // Pra cada hábito nos dados...
+            allHabits.forEach(habit => {
+                const item = document.querySelector(`.habit-item[data-habit-id="${habit.id}"]`); // Acha na tela
+                if (item) {
+                    // Pra cada checkbox do hábito na tela...
+                    item.querySelectorAll('input[type="checkbox"]').forEach((check, index) => {
+                        // Garante que a estrutura 'checks' existe e tem 7 posições
+                        if (!Array.isArray(habit.checks) || habit.checks.length !== 7) habit.checks = Array(7).fill(false);
+                        habit.checks[index] = check.checked; // Atualiza o dado (true/false)
+                    });
+                }
+            });
+            saveHabits(); // Salva e re-desenha
+            showMessage(habitSaveMessage, 'Hábitos salvos!', 'success'); // Mostra sucesso
+        });
+
+        // Desenha a lista de hábitos na tela
+        function renderHabits() {
+            if (!Array.isArray(allHabits)) { habitList.innerHTML = '<p>Erro: Dados inválidos.</p>'; return; } // Segurança
+
+            habitList.innerHTML = ''; // Limpa
+            allHabits.forEach(habit => { // Pra cada hábito...
+                const item = document.createElement('div'); // Cria card
+                item.className = 'habit-item'; item.dataset.habitId = habit.id;
+                let checkboxes = ''; const days = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']; // Dias da semana
+                // Garante que 'checks' é uma lista válida de 7 booleans
+                const checks = Array.isArray(habit.checks) && habit.checks.length === 7 ? habit.checks : Array(7).fill(false);
+                if (!Array.isArray(habit.checks) || habit.checks.length !== 7) habit.checks = Array(7).fill(false); // Auto-correção
+                // Cria os checkboxes
+                checks.forEach((isChecked, index) => {
+                    checkboxes += `<div class="day-check"><label>${days[index]}</label><input type="checkbox" data-day="${index}" ${isChecked ? 'checked' : ''}></div>`;
+                });
+                // Monta HTML do card
+                item.innerHTML = `
+                        <div class="habit-item-header">
+                            <span>${habit.title}</span>
+                            <button class="delete-habit-btn" data-id="${habit.id}"><i class="ph ph-trash"></i></button>
+                        </div>
+                        <div class="habit-tracker">${checkboxes}</div>
+                    `;
+                habitList.appendChild(item); // Adiciona na tela
+            });
+
+            // Adiciona evento pro botão de deletar hábito
+            document.querySelectorAll('.delete-habit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.id;
+                    if (Array.isArray(allHabits)) { // Segurança
+                        allHabits = allHabits.filter(h => h.id !== id); // Remove dos dados
+                        saveHabits(); // Salva e re-desenha
+                    }
+                });
+            });
+            updateDashboardStats(); // Atualiza Dashboard
+        }
+
+        // --- Lógica das Configurações (Chave da API) ---
+        // Professora, aqui o usuário coloca a chave pra usar a IA.
+        const apiKeyInput = document.getElementById('api-key-input'); // Campo da chave
+        const saveApiKeyBtn = document.getElementById('save-api-key-btn'); // Botão salvar
+        const apiKeyMessage = document.getElementById('api-key-message'); // Mensagem sucesso/erro
+
+        // Carrega a chave salva quando o app inicia
+        function loadApiKey() {
+            userApiKey = localStorage.getItem('GEMINI_API_KEY') || ""; // Pega do localStorage
+            if (userApiKey) apiKeyInput.value = userApiKey; // Coloca no campo (tipo password)
+            else console.warn("Chave API não configurada.");
+        }
+
+        // Evento pra salvar a chave digitada
+        saveApiKeyBtn.addEventListener('click', () => {
+            const newKey = apiKeyInput.value.trim();
+            if (newKey) { // Se não tá vazia...
+                localStorage.setItem('GEMINI_API_KEY', newKey); // Salva no localStorage
+                userApiKey = newKey; // Atualiza a variável global
+                showMessage(apiKeyMessage, 'Chave de API salva!', 'success');
+            } else {
+                showMessage(apiKeyMessage, 'Campo da chave vazio.', 'error');
+            }
+        });
+
+
+        // --- Função Principal de Inicialização ---
+        // Professora, essa função carrega TUDO quando o usuário entra no app.
+        function loadAllData() {
+            loadApiKey(); // Carrega a chave da API
+
+            // Carrega Tarefas (com segurança pra não quebrar se os dados estiverem ruins)
+            try {
+                const tasksData = localStorage.getItem('FOCO_TOTAL_TASKS');
+                allTasks = tasksData ? JSON.parse(tasksData) : []; // Carrega ou cria lista vazia
+                if (!Array.isArray(allTasks)) allTasks = []; // Garante que é lista
+            } catch(e) { console.error("Erro ao carregar Tarefas:", e); allTasks = []; } // Se der erro, usa lista vazia
+            renderTasks(); // Desenha na tela
+
+            // Carrega Metas (com segurança e valores padrão)
+            try {
+                const goalsData = localStorage.getItem('FOCO_TOTAL_GOALS');
+                // Define metas padrão caso não haja nada salvo
+                const defaultGoals = [ { id: "1", title: "Juntar R$ 4.000", type: "financeiro", inicial: 0, meta: 4000, atual: 0 }, { id: "2", title: "Atingir 85kg", type: "peso", inicial: 75, meta: 85, atual: 75 }, { id: "3", title: "Ler 12 livros", type: "quantidade", inicial: 0, meta: 12, atual: 0 } ];
+                allGoals = goalsData ? JSON.parse(goalsData) : defaultGoals;
+                if (!Array.isArray(allGoals)) { console.warn("Metas inválidas, usando padrão."); allGoals = defaultGoals; } // Segurança
+            } catch(e) { console.error("Erro ao carregar Metas:", e); allGoals = []; } // Se der erro, usa lista vazia
+            renderGoals(); // Desenha na tela
+
+            // Carrega Hábitos (com segurança e valores padrão)
+            const defaultHabits = [ { id: "1", title: "Beber 3L de Água", checks: Array(7).fill(false) }, { id: "2", title: "Ir à Academia", checks: Array(7).fill(false) } ];
+            let habitsData = localStorage.getItem('FOCO_TOTAL_HABITS');
+            try {
+                allHabits = habitsData ? JSON.parse(habitsData) : defaultHabits;
+                // Verifica se a estrutura dos dados carregados está correta
+                if (!Array.isArray(allHabits) || (allHabits.length > 0 && (typeof allHabits[0] !== 'object' || !allHabits[0]?.id || !allHabits[0]?.title || !Array.isArray(allHabits[0]?.checks) || allHabits[0].checks.length !== 7))) {
+                    console.warn('Hábitos salvos inválidos, resetando.');
+                    allHabits = defaultHabits; localStorage.setItem('FOCO_TOTAL_HABITS', JSON.stringify(allHabits));
+                }
+            } catch (e) { // Se der erro ao carregar...
+                console.error('Erro ao carregar Hábitos:', e);
+                allHabits = defaultHabits; localStorage.setItem('FOCO_TOTAL_HABITS', JSON.stringify(allHabits));
+            }
+            renderHabits(); // Desenha na tela
+
+            updateDashboardStats(); // Atualiza os números no Dashboard com tudo carregado
+        }
+
+    }); // Fim do 'DOMContentLoaded' (fim do código principal)
+
+</script>
+</body>
+</html>
